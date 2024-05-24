@@ -17,7 +17,7 @@ class Demo
     {
         echo '
             <p>
-                <b>SDW:</b> Powered by THM!
+                <b>SDW:</b> "Diese Seite wurde in 123 ms gerendert, der maximale Speicherbedarf lag bei 123 MB."
             </p>
         ';
     }
