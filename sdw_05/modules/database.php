@@ -13,7 +13,7 @@ add_action('plugins_loaded', ['THM\Security\Database', 'init'], 6);
  */
 class Database
 {
-    private static $db_version = '26';
+    private static $db_version = '28';
     private static $table_name = 'thm_security_access_log';
 
     /**
@@ -56,7 +56,9 @@ P NOT NULL,
             accept VARCHAR(256) NOT NULL,
             accept_encoding VARCHAR(64) NOT NULL,
             accept_language VARCHAR(64) NOT NULL,
-            
+            request_class VARCHAR(128) NOT NULL,
+             is_blocked BOOLEAN DEFAULT 0 NOT NULL,
+            blocked_at TIMESTAMP NULL DEFAULT NULL,
             
 		) $charset_collate;";
         dbDelta($table);
@@ -95,7 +97,8 @@ P NOT NULL,
         $sec_fetch_user,
         $accept,
         $accept_encoding,
-        $accept_language
+        $accept_language,
+        $request_class
     )
     {
         global $wpdb;
@@ -117,7 +120,8 @@ P NOT NULL,
                 'sec_fetch_user' => $sec_fetch_user,
                 'accept' => $accept,
                 'accept_encoding' => $accept_encoding,
-                'accept_language' => $accept_language
+                'accept_language' => $accept_language,
+                'request_class' => $request_class
             ]);
     }
 

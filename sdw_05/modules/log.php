@@ -5,6 +5,7 @@ namespace THM\Security;
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once(dirname(__FILE__) . '/database.php');
+require_once(dirname(__FILE__) . '/classifier.php');
 
 add_action('admin_menu', ['\THM\Security\Log', 'add_menu']);
 add_action('wp_loaded', ['\THM\Security\Log', 'log_access']);
@@ -76,6 +77,9 @@ class Log
                 <th>Accept</th>
                 <th>Accept-Encoding</th>
                 <th>Accept-Language</th>
+                <th>Request-Class</th>
+                <th>Is-Blocked</th>
+                <th>Blocked-At</th>
             </tr>
             </thead>
             <tbody>
@@ -99,6 +103,10 @@ class Log
                     <td><?= esc_html($log->accept) ?></td>
                     <td><?= esc_html($log->accept_encoding) ?></td>
                     <td><?= esc_html($log->accept_language) ?></td>
+                    <td><?= esc_html($log->request_class) ?></td>
+                    <td><?= esc_html($log->is_blocked) ?></td>
+                    <td><?= esc_html($log->blocked_at) ?></td>
+
 
                 </tr>
             <?php endforeach; ?>
@@ -125,6 +133,7 @@ class Log
      */
     public static function log_access()
     {
+
         // check if URI matches '/favicon.ico'
         if ($_SERVER['REQUEST_URI'] !== '/favicon.ico') {
             $status_code = http_response_code();
@@ -138,6 +147,9 @@ class Log
             $accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : 'NO INFO';
             $accept_encoding = isset($_SERVER['HTTP_ACCEPT_ENCODING']) ? $_SERVER['HTTP_ACCEPT_ENCODING'] : 'NO INFO';
             $accept_language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'NO INFO';
+
+            // Get class form classify request function
+            $request_class = Classifier::classify_request();
 
             Database::append_access_log(
                 $_SERVER['REMOTE_ADDR'],
@@ -156,8 +168,10 @@ class Log
                 $sec_fetch_user,
                 $accept,
                 $accept_encoding,
-                $accept_language
+                $accept_language,
+                $request_class
             );
+
         }
     }
 
