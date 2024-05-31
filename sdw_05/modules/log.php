@@ -2,10 +2,13 @@
 
 namespace THM\Security;
 
+use DateTime;
+
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once(dirname(__FILE__) . '/database.php');
 require_once(dirname(__FILE__) . '/classifier.php');
+require_once(dirname(__FILE__) . '/ip-blocker.php');
 
 add_action('admin_menu', ['\THM\Security\Log', 'add_menu']);
 add_action('wp_loaded', ['\THM\Security\Log', 'log_access']);
@@ -147,9 +150,9 @@ class Log
             $accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : 'NO INFO';
             $accept_encoding = isset($_SERVER['HTTP_ACCEPT_ENCODING']) ? $_SERVER['HTTP_ACCEPT_ENCODING'] : 'NO INFO';
             $accept_language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'NO INFO';
-
-            // Get class form classify request function
-            $request_class = Classifier::classify_request();
+            $request_class= Classifier::classify_request();
+            $is_blocked = IPBlocker::check_ip_block();
+            $blocked_at = IPBlocker::check_block_time();
 
             Database::append_access_log(
                 $_SERVER['REMOTE_ADDR'],
@@ -169,7 +172,9 @@ class Log
                 $accept,
                 $accept_encoding,
                 $accept_language,
-                $request_class
+                $request_class,
+                $is_blocked,
+                $blocked_at
             );
 
         }

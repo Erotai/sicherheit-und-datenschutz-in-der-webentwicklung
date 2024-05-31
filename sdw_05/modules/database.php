@@ -24,6 +24,7 @@ class Database
         if (get_site_option(self::$table_name . '_db_version') != self::$db_version) {
             self::install_db();
         }
+
     }
 
     /**
@@ -57,7 +58,7 @@ P NOT NULL,
             accept_encoding VARCHAR(64) NOT NULL,
             accept_language VARCHAR(64) NOT NULL,
             request_class VARCHAR(128) NOT NULL,
-             is_blocked BOOLEAN DEFAULT 0 NOT NULL,
+            is_blocked BOOLEAN NOT NULL,
             blocked_at TIMESTAMP NULL DEFAULT NULL,
             
 		) $charset_collate;";
@@ -65,6 +66,7 @@ P NOT NULL,
 
         update_site_option(self::$table_name . '_db_version', self::$db_version);
     }
+
 
     /**
      * Get a list of all entries from the access log.
@@ -98,7 +100,9 @@ P NOT NULL,
         $accept,
         $accept_encoding,
         $accept_language,
-        $request_class
+        $request_class,
+        $is_blocked,
+        $blocked_at
     )
     {
         global $wpdb;
@@ -121,7 +125,9 @@ P NOT NULL,
                 'accept' => $accept,
                 'accept_encoding' => $accept_encoding,
                 'accept_language' => $accept_language,
-                'request_class' => $request_class
+                'request_class' => $request_class,
+                'is_blocked' => $is_blocked,
+                'blocked_at' => $blocked_at
             ]);
     }
 

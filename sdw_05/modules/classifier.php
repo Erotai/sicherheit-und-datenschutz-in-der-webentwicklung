@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 add_filter('wp_loaded', ['THM\Security\Classifier', 'init'], 5);
 
 /**
- * Database module for the THM Security plugin.
+ * Classifier module for the THM Security plugin.
  */
 class Classifier
 {
@@ -18,10 +18,11 @@ class Classifier
         header("X-THMSEC: ENABLED");
         header("X-THMSEC-CLASS: $request_class");
 
-        if ($request_class != 'normal') {
+        if ($request_class !== 'normal') {
             header("HTTP/1.1 404 Not Found");
             exit;
         }
+
     }
 
     public static function classify_request(): string
@@ -32,6 +33,7 @@ class Classifier
             'sql-injection' => '/(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER)/i',
             'xss-attack' => '/(<script>|%3Cscript%3E)/i',
             'brute-force' => '/(wp-login\.php\?action=login|xmlrpc\.php)/i',
+            //'file-access' => '/\/(searchreplacedb2\.php|wp-cron\.php|themes)/i',
             'spam' => '/(spammy-word|another-spammy-word)/i',
         ];
 
