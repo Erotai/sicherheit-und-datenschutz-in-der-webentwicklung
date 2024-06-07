@@ -34,9 +34,6 @@ class IPBlocker
         // get request class
         $request_class = Classifier::classify_request();
 
-        // sql placeholder
-        $class = 'brute-force';
-
         // database vars
         $ip = $_SERVER['REMOTE_ADDR'];
         global $wpdb;
@@ -45,11 +42,6 @@ class IPBlocker
         // get block status form database
         $result = $wpdb->get_row($wpdb->prepare(
             "SELECT is_blocked, blocked_at FROM $table_name WHERE client = %s AND is_blocked = 1 ", $ip // %s is a placeholder for the IP
-        ));
-
-        // get request count from database
-        $count = $wpdb->get_row($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE client = %s AND request_class = %s AND time > now() - interval 10 minute", $ip, $class
         ));
 
         // check if ip is blocked
@@ -62,7 +54,7 @@ class IPBlocker
             $old = strtotime($blocked_at);
             $current = strtotime($now);
 
-            // check if the ip was blocked over 24 = 86400 hours ago
+            // check if the ip was blocked over 24 hours ago -> 24 hours in minutes: 86400
             if ($old - $current >= 86400) {
                 // new vars
                 $set_new_state = 0;
@@ -77,22 +69,12 @@ class IPBlocker
             // IP is Blocked
             return true;
         }
-        /*
-         * NEEDS FIXING
-        */
 
         // Check if request class is not normal
-        if ($request_class !== 'normal' /*&& $request_class !=='brute-force'*/) {
+        if ($request_class !== 'normal') {
             // block ip if not normal
             return true;
         }
-
-        /*// Block IP if count exceeds 10 requests and is class brute-force
-        if ($count >= 10 && $request_class === "brute-force") {
-            // BLock IP
-            echo $count;
-            return true;
-        }*/
 
         // IP Not Blocked
         return false;
