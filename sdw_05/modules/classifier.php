@@ -4,7 +4,7 @@ namespace THM\Security;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-add_filter('wp_loaded', ['THM\Security\Classifier', 'init'], 5);
+add_filter('init', ['THM\Security\Classifier', 'init'], 5);
 
 /**
  * Classifier module for the THM Security plugin.
@@ -17,7 +17,6 @@ class Classifier
 
         header("X-THMSEC: ENABLED");
         header("X-THMSEC-CLASS: $request_class");
-
         if ($request_class !== 'normal') {
             header("HTTP/1.1 404 Not Found");
             exit;
@@ -34,7 +33,6 @@ class Classifier
             'xss-attack' => '/(<script>|%3Cscript%3E)/i',
             'brute-force' => '/(wp-login\.php\?action=login|xmlrpc\.php)/i',
             //'file-access' => '/\/(searchreplacedb2\.php|wp-cron\.php|themes)/i',
-            'spam' => '/(spammy-word|another-spammy-word)/i',
         ];
 
         // Iterate over every key-value pair in the patterns array, class is set as the key and patterns as patterns
