@@ -16,5 +16,5 @@ require_once(dirname(__FILE__) . '/modules/username-enumeration.php');
 require_once(dirname(__FILE__) . '/modules/log.php');
 require_once(dirname(__FILE__) . '/modules/demo.php');
 require_once(dirname(__FILE__) . '/modules/comment-author.php');
-
+require_once(dirname(__FILE__) . '/modules/leaks.php');
 ?>
