@@ -49,15 +49,22 @@ class Classifier
         $ip = $_SERVER['REMOTE_ADDR'];
         $uri = $_SERVER['REQUEST_URI'];
         global $wpdb;
-        $test = '%wp-login%';
+        $brute_force_login_uri = '%wp-login%';
         $table_name = $wpdb->prefix . 'thm_security_access_log';
 
-        // get request count from database
-        $count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute", $ip, $test
+        // get login request count from database
+        $login_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute", $ip, $brute_force_login_uri
+        ));
+        // get count of spam or other brute force type attacks
+        $request_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE client = %s AND time > now() - interval 5 minute", $ip
         ));
         // Set class to Brute Force if count exceeds 10 requests
-        if ($count >= 10) {
+        if ($login_count >= 10) {
+
+            $request_class = 'brute-force';
+        } else if ($request_count >= 100) {
 
             $request_class = 'brute-force';
         }
