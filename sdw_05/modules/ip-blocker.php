@@ -14,9 +14,12 @@ class IPBlocker
 {
     public static function init()
     {
+        // Use check_ip_block and store result
         $is_blocked = self::check_ip_block();
+
         // check if ip is blocked
         if ($is_blocked) {
+            // Use log_exists and store result
             $log_exists = self::log_exists();
 
             // check if log of ip exists
@@ -35,9 +38,9 @@ class IPBlocker
         $request_class = Classifier::classify_request();
 
         // database vars
-        $ip = $_SERVER['REMOTE_ADDR'];
         global $wpdb;
         $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $ip = $_SERVER['REMOTE_ADDR'];
 
         // get block status form database
         $result = $wpdb->get_row($wpdb->prepare(
@@ -72,7 +75,7 @@ class IPBlocker
 
         // Check if request class is not normal
         if ($request_class !== 'normal') {
-            // block ip if not normal
+            // Block ip if not normal
             return true;
         }
 
@@ -93,21 +96,24 @@ class IPBlocker
 
     public static function log_exists(): bool
     {
+        // Database vars
         $ip = $_SERVER['REMOTE_ADDR'];
         global $wpdb;
         $table_name = $wpdb->prefix . 'thm_security_access_log';
 
-        $result2 = $wpdb->get_row($wpdb->prepare(
+        // Database query for getting last log of an IP
+        $result = $wpdb->get_row($wpdb->prepare(
             "SELECT is_blocked FROM $table_name WHERE client = %s ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
         ));
 
-        if ($result2 && $result2->is_blocked) {
+        // Check if is blocked is true
+        if ($result && $result->is_blocked) {
+            // Log exists
             return true;
         }
-
+        // Log doesnt exist
         return false;
     }
-
 
 }
 

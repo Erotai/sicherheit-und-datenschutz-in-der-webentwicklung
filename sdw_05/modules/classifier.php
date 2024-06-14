@@ -64,17 +64,12 @@ class Classifier
          * ACCESS TOOL DETECTION
          **/
         // List of viable user agents
-        $user_agents = "/windows|linux|fedora|ubuntu|macintosh|i-phone|i-pod|i-pad|android|wordpress/i";
+        $user_agents = "/windows|linux|fedora|ubuntu|macintosh|i-phone|i-pod|i-pad|android|wordpress|postman/i";
 
         // Check if user agent is viable
         if (!preg_match($user_agents, $user_agent)) {
             $request_class = 'access-tool';
         }
-
-        /**
-         * SPAM DETECTION
-         **/
-        //...
 
         /**
          * PATTERN DETECTION
@@ -84,7 +79,7 @@ class Classifier
             // pattern for the wp-config file
             'config-grabber' => '/\/wp-config.php/i',
             // pattern for scripts uses regEx expressions (NOT OPTIMAL!) [^e] --> find any char not between brackets (hello = hllo), n* --> matches if string contains zero or more occurrences of n
-            'content-injection' => '/(<script[^>]*>.*?<\/script>|<iframe[^>]*>.*?<\/iframe>)/i',
+            'script-insert' => '/(<script[^>]*>.*?<\/script>|<iframe[^>]*>.*?<\/iframe>)/i',
             //'file-access' => '/\/(searchreplacedb2\.php|wp-cron\.php|themes)/i'
         ];
 
