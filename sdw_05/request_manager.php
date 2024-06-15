@@ -9,20 +9,20 @@ Author URI: https://www.thm.de
 
 namespace THM\Security;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 add_action('admin_notices', ['THM\Security\RequestManager', 'admin_notices'], 10, 0);
 
-define('MAIN_FILE', __FILE__ );
+define('MAIN_FILE', __FILE__);
 
 require_once(dirname(__FILE__) . '/modules/classifier.php');
 require_once(dirname(__FILE__) . '/modules/username-enumeration.php');
 require_once(dirname(__FILE__) . '/modules/log.php');
 require_once(dirname(__FILE__) . '/modules/leaks.php');
-require_once(dirname(__FILE__) . '/modules/database.php');
 
 class RequestManager
 {
+
     /**
      * Display a dismissable notice in the admin area
      */
@@ -31,11 +31,12 @@ class RequestManager
         echo '
             <div class="notice notice-success is-dismissible">
                 <p>
-                    Plugin: RequestManager loaded successfully!
+                    Plugin: Request-Manager loaded successfully!
                 </p>
             </div>
         ';
     }
 
 }
+
 ?>

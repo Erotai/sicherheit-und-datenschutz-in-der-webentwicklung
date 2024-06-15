@@ -6,7 +6,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-//add_action('wp_loaded', ['THM\Security\Database', 'init'], 6);
 register_activation_hook(MAIN_FILE, ['THM\Security\Database', 'init']);
 register_deactivation_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
 register_uninstall_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
@@ -18,19 +17,19 @@ register_uninstall_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
 class Database
 {
 
-    private static $db_version = '33';
-    private static $table_name = 'thm_security_access_log';
+    //private static $db_version = '0';
+    private static $table_name = 'request_manager_access_log';
 
     /**
      * Initialize the database module.
      */
     public static function init()
     {
+        self::install_db();
+        /*if (get_site_option(self::$table_name . '_db_version') != self::$db_version) {
 
-        if (get_site_option(self::$table_name . '_db_version') != self::$db_version) {
-
-            //self::install_db();
-        }
+            self::install_db();
+        }*/
 
     }
 
@@ -39,7 +38,7 @@ class Database
         global $wpdb;
         $db = $wpdb->prefix . self::$table_name;
         $table = "DROP TABLE IF EXISTS $db";
-        dbDelta($table);
+        $wpdb->query($table);
     }
 
     /**
@@ -53,8 +52,7 @@ class Database
         $charset_collate = $wpdb->get_charset_collate();
 
         $table = "CREATE TABLE $db (
-			time 
-P NOT NULL,
+			time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
             client VARCHAR(32) NOT NULL,
             url VARCHAR(128) NOT NULL,
             method VARCHAR(32) NOT NULL,
@@ -64,12 +62,12 @@ P NOT NULL,
             sec_fetch_user VARCHAR(32) NOT NULL,
             request_class VARCHAR(128) NOT NULL,
             is_blocked BOOLEAN NOT NULL,
-            blocked_at TIMESTAMP NULL DEFAULT NULL,
+            blocked_at TIMESTAMP NULL DEFAULT NULL
             
 		) $charset_collate;";
         dbDelta($table);
 
-        update_site_option(self::$table_name . '_db_version', self::$db_version);
+        //update_site_option(self::$table_name . '_db_version', self::$db_version);
     }
 
     /**

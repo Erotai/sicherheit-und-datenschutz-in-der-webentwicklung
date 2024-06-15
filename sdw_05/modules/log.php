@@ -12,7 +12,7 @@ require_once(dirname(__FILE__) . '/ip-blocker.php');
 
 add_action('admin_menu', ['\THM\Security\Log', 'add_menu']);
 add_action('wp_loaded', ['\THM\Security\Log', 'log_access']);
-add_action('wp_loaded', ['\THM\Security\Log', 'wp_scan_deflect_user']);
+//add_action('wp_loaded', ['\THM\Security\Log', 'wp_scan_deflect_user']);
 add_filter('xmlrpc_enabled', '__return_false');
 
 /**
@@ -25,7 +25,7 @@ class Log
      */
     public static function add_menu()
     {
-        add_management_page('THM Security', 'THM Security', 'manage_options', 'thm-security', ['\THM\Security\Log', 'render_management_page']);
+        add_management_page('Request-Manager', 'Request-Manager', 'manage_options', 'request-manager', ['\THM\Security\Log', 'render_management_page']);
     }
 
     /**
@@ -140,7 +140,7 @@ class Log
         }
     }
 
-    public static function wp_scan_deflect_user() {
+   /* public static function wp_scan_deflect_user() {
         // deny finding with method wp-json
         if (strpos($_SERVER['REQUEST_URI'],'wp-json')) {
             die();
@@ -149,7 +149,7 @@ class Log
         if (preg_match('/\?author=([0-9]*)(\/*)/i', $_SERVER['REQUEST_URI'])) {
             die();
         }
-    }
+    }*/
 }
 
 ?>
