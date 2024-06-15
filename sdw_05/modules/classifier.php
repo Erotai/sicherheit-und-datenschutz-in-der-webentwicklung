@@ -38,7 +38,7 @@ class Classifier
         // database vars
         global $wpdb;
         $brute_force_login_uri = '%wp-login%';
-        $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $table_name = $wpdb->prefix . 'request_manager_access_log';
 
         /**
          * BRUTE FORCE DETECTION

@@ -10,6 +10,8 @@ register_activation_hook(MAIN_FILE, ['THM\Security\Database', 'init']);
 register_deactivation_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
 register_uninstall_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
 
+add_action('wp_loaded', ['\THM\Security\Database', 'check_database_reset']);
+
 /**
  * Database module for the THM Security plugin.
  */
@@ -32,6 +34,28 @@ class Database
         }*/
 
     }
+
+    public static function check_database_reset()
+    {
+        global $wpdb;
+        $db = $wpdb->prefix . self::$table_name;
+
+        $query = $wpdb->get_row($wpdb->prepare(
+            "SELECT time FROM $db WHERE time + INTERVAL 30 DAY < NOW() LIMIT 1"
+        ));
+
+        // check if 30 Days have passed >= 30 Days
+        if ($query && $query->time) {
+            // Reinstall db
+            self::uninstall_db();
+            self::install_db();
+        }
+
+    }
+
+    /**
+     * Uninstall the database on the mysql server.
+     */
 
     public static function uninstall_db()
     {

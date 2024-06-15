@@ -39,7 +39,7 @@ class IPBlocker
 
         // database vars
         global $wpdb;
-        $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $table_name = $wpdb->prefix . 'request_manager_access_log';
         $ip = $_SERVER['REMOTE_ADDR'];
 
         // get block status form database
@@ -57,7 +57,7 @@ class IPBlocker
             $old = strtotime($blocked_at);
             $current = strtotime($now);
 
-            // check if the ip was blocked over 24 hours ago -> 24 hours in minutes: 86400
+            // check if the ip was blocked over 24 hours ago -> 24 hours in seconds: 86400
             if ($old - $current >= 86400) {
                 // new vars
                 $set_new_state = 0;
@@ -99,11 +99,11 @@ class IPBlocker
         // Database vars
         $ip = $_SERVER['REMOTE_ADDR'];
         global $wpdb;
-        $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $table_name = $wpdb->prefix . 'request_manager_access_log';
 
         // Database query for getting last log of an IP
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT is_blocked FROM $table_name WHERE client = %s ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
+            "SELECT is_blocked FROM $table_name ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
         ));
 
         // Check if is blocked is true
