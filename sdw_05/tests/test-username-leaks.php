@@ -4,13 +4,9 @@ require_once __DIR__ . '/curl.php';
 $base_url = 'https://your-wordpress-site.com';
 
 // Function to perform cURL request
-// Function to perform cURL request
 function perform_curl_request($url)
 {
     $ch = curl_init(); // Initialize cURL handle
-
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -93,5 +89,4 @@ test_author_link($base_url);
 test_rest_api_user($base_url);
 test_feed_author($base_url);
 test_comments_author($base_url);
-
 ?>
