@@ -50,15 +50,13 @@ class IPBlocker
         // check if ip is blocked
         if ($result && $result->is_blocked) {
             // set blocked_at from query result and get current time
-            $blocked_at = $result->blocked_at;
-            $now = (new \DateTime())->format('Y-m-d H:i:s');
 
-            // convert DateTime into Time
-            $old = strtotime($blocked_at);
-            $current = strtotime($now);
+            $query = $wpdb->get_row($wpdb->prepare(
+            "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR > NOW() LIMIT 1"
+            ));
 
             // check if the ip was blocked over 24 hours ago -> 24 hours in seconds: 86400
-            if ($old - $current >= 86400) {
+            if ($query && $query->blocked_at) {
                 // new vars
                 $set_new_state = 0;
                 $set_new_date = '0000-00-00 00:00:00';
