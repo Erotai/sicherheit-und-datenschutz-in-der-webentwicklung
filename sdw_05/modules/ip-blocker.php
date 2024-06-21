@@ -5,7 +5,7 @@ namespace THM\Security;
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 // Webhook init to cut the connection as soon as possible
-add_filter('init', ['\THM\Security\IPBlocker', 'init'], 4);
+add_filter('init', ['\THM\Security\IPBlocker', 'init'], 5);
 
 /**
  * IPBlocker module for the THM Security plugin.
@@ -14,13 +14,13 @@ class IPBlocker
 {
     public static function init()
     {
-        // Use check_ip_block and store result
-        $is_blocked = self::check_ip_block();
-
         $request_class = Classifier::classify_request();
         // Set header
         header("X-THMSEC: ENABLED");
         header("X-THMSEC-CLASS: $request_class");
+
+        // Use check_ip_block and store result
+        $is_blocked = self::check_ip_block();
 
         // check if ip is blocked
         if ($is_blocked) {
@@ -32,6 +32,7 @@ class IPBlocker
                 // Log Access
                 Log::log_access();
             }
+
             die('AH AH AH You didn\'t say the magic word!');
         }
     }
@@ -57,7 +58,7 @@ class IPBlocker
             // set blocked_at from query result and get current time
 
             $query = $wpdb->get_row($wpdb->prepare(
-            "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR < NOW() LIMIT 1"
+                "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR < NOW() LIMIT 1"
             ));
 
             // check if the ip was blocked over 24 hours ago -> 24 hours in seconds: 86400
@@ -106,16 +107,17 @@ class IPBlocker
 
         // Database query for getting last log of an IP
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT is_blocked FROM $table_name ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
+            "SELECT is_blocked FROM $table_name WHERE client = %s AND is_blocked = 1 ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
         ));
 
         // Check if is blocked is true
         if ($result && $result->is_blocked) {
             // Log exists
             return true;
+        } else {
+            // Log doesnt exist
+            return false;
         }
-        // Log doesnt exist
-        return false;
     }
 
 }

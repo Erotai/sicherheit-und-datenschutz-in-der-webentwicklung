@@ -13,13 +13,7 @@ class Classifier
 {
     public static function init()
     {
-        $request_class = self::classify_request();
-
-        if ($request_class !== 'normal') {
-            header("HTTP/1.1 404 Not Found");
-            exit;
-        }
-
+        // HM
     }
 
     public static function classify_request(): string
@@ -49,10 +43,10 @@ class Classifier
             "SELECT COUNT(*) FROM $table_name WHERE client = %s AND time > now() - interval 5 minute", $ip
         ));
         // Set class to Brute Force if count exceeds 10 requests
-        if ($login_count >= 10) {
+        if ($login_count >= 9) {
 
             $request_class = 'brute-force';
-        } else if ($request_count >= 100) {
+        } else if ($request_count >= 99) {
 
             $request_class = 'brute-force';
         }
