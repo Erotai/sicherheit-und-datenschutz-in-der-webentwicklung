@@ -1,12 +1,12 @@
 <?php
 
-function get($url)
+function get($url, $agent)
 {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HEADER, true);
     // Set custom user-agent
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_USERAGENT, $agent);
     $response = curl_exec($ch);
     $statuscode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
