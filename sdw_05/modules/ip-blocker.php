@@ -17,6 +17,11 @@ class IPBlocker
         // Use check_ip_block and store result
         $is_blocked = self::check_ip_block();
 
+        $request_class = Classifier::classify_request();
+        // Set header
+        header("X-THMSEC: ENABLED");
+        header("X-THMSEC-CLASS: $request_class");
+
         // check if ip is blocked
         if ($is_blocked) {
             // Use log_exists and store result
@@ -52,7 +57,7 @@ class IPBlocker
             // set blocked_at from query result and get current time
 
             $query = $wpdb->get_row($wpdb->prepare(
-            "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR > NOW() LIMIT 1"
+            "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR < NOW() LIMIT 1"
             ));
 
             // check if the ip was blocked over 24 hours ago -> 24 hours in seconds: 86400

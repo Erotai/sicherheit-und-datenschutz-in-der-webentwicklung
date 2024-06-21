@@ -14,9 +14,6 @@ class Classifier
     public static function init()
     {
         $request_class = self::classify_request();
-        // Set header
-        header("X-THMSEC: ENABLED");
-        header("X-THMSEC-CLASS: $request_class");
 
         if ($request_class !== 'normal') {
             header("HTTP/1.1 404 Not Found");
