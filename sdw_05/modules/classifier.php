@@ -14,9 +14,6 @@ class Classifier
     public static function init()
     {
         $request_class = self::classify_request();
-        // Set header
-        header("X-THMSEC: ENABLED");
-        header("X-THMSEC-CLASS: $request_class");
 
         if ($request_class !== 'normal') {
             header("HTTP/1.1 404 Not Found");
@@ -38,7 +35,7 @@ class Classifier
         // database vars
         global $wpdb;
         $brute_force_login_uri = '%wp-login%';
-        $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $table_name = $wpdb->prefix . 'request_manager_access_log';
 
         /**
          * BRUTE FORCE DETECTION

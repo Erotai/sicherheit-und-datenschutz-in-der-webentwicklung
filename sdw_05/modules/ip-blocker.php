@@ -17,6 +17,11 @@ class IPBlocker
         // Use check_ip_block and store result
         $is_blocked = self::check_ip_block();
 
+        $request_class = Classifier::classify_request();
+        // Set header
+        header("X-THMSEC: ENABLED");
+        header("X-THMSEC-CLASS: $request_class");
+
         // check if ip is blocked
         if ($is_blocked) {
             // Use log_exists and store result
@@ -39,7 +44,7 @@ class IPBlocker
 
         // database vars
         global $wpdb;
-        $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $table_name = $wpdb->prefix . 'request_manager_access_log';
         $ip = $_SERVER['REMOTE_ADDR'];
 
         // get block status form database
@@ -50,15 +55,13 @@ class IPBlocker
         // check if ip is blocked
         if ($result && $result->is_blocked) {
             // set blocked_at from query result and get current time
-            $blocked_at = $result->blocked_at;
-            $now = (new \DateTime())->format('Y-m-d H:i:s');
 
-            // convert DateTime into Time
-            $old = strtotime($blocked_at);
-            $current = strtotime($now);
+            $query = $wpdb->get_row($wpdb->prepare(
+            "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR < NOW() LIMIT 1"
+            ));
 
-            // check if the ip was blocked over 24 hours ago -> 24 hours in minutes: 86400
-            if ($old - $current >= 86400) {
+            // check if the ip was blocked over 24 hours ago -> 24 hours in seconds: 86400
+            if ($query && $query->blocked_at) {
                 // new vars
                 $set_new_state = 0;
                 $set_new_date = '0000-00-00 00:00:00';
@@ -99,11 +102,11 @@ class IPBlocker
         // Database vars
         $ip = $_SERVER['REMOTE_ADDR'];
         global $wpdb;
-        $table_name = $wpdb->prefix . 'thm_security_access_log';
+        $table_name = $wpdb->prefix . 'request_manager_access_log';
 
         // Database query for getting last log of an IP
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT is_blocked FROM $table_name WHERE client = %s ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
+            "SELECT is_blocked FROM $table_name ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
         ));
 
         // Check if is blocked is true
