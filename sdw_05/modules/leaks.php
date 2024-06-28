@@ -1,117 +1,106 @@
 <?php
-
 /**
  * Plugin Name: sdw_05
  * Description: Verhindert die Anzeige von Benutzernamen an öffentlichen Orten.
- * Version: 2.3
+ * Version: 2.8
  * Author: Fabian Gjergjaj
  */
 
-// Verhindert die Anzeige von Benutzernamen im HTML und ersetzt sie durch den Anzeigennamen
-add_filter('the_author', 'hide_usernames');
-add_filter('get_comment_author', 'hide_usernames');
+add_action('init', 'sdw_05_register_hooks');
+
+function sdw_05_register_hooks() {
+    // Verhindert die Anzeige von Benutzernamen im HTML und ersetzt sie durch den Nicknamen oder "Anonym"
+    add_filter('the_author', 'hide_usernames');
+    add_filter('get_comment_author', 'hide_usernames');
+    add_filter('comment_author', 'hide_usernames');
+    add_filter('author_link', 'disable_author_links', 10, 2);
+    add_filter('rest_prepare_user', 'hide_usernames_in_rest', 10, 3);
+    add_action('admin_notices', 'check_display_name_vs_username');
+    add_action('profile_update', 'force_display_name_update', 10, 2);
+    add_filter('get_the_author_display_name', 'hide_usernames');
+    add_filter('wp_nav_menu_items', 'hide_usernames_in_menu', 10, 2);
+}
 
 function hide_usernames($name) {
     $user = get_user_by('login', $name);
-    if ($user && $user->user_login === $user->display_name) {
+    if ($user) {
+        if (!empty($user->nickname) && $user->nickname !== $user->user_login) {
+            return $user->nickname;
+        }
         return 'Anonym';
     }
-    return $user ? $user->display_name : $name;
+    return $name; // Wenn kein Benutzer gefunden wurde, ursprünglichen Namen zurückgeben
 }
 
 // Entfernen von Autor-URLs
-add_filter('author_link', 'disable_author_links', 10, 2);
 function disable_author_links($link, $author_id) {
-    $user = get_userdata($author_id);
-    if ($user && $user->user_login === $user->display_name) {
-        return '#';
+    $user = get_user_by('id', $author_id);
+    if ($user && !empty($user->user_login)) {
+        return '#'; // Entfernt Autor-Links
     }
     return $link;
 }
 
 // REST API Filter, um Benutzernamen zu verbergen
-add_filter('rest_prepare_user', 'hide_usernames_in_rest', 10, 3);
 function hide_usernames_in_rest($response, $user, $request) {
     $data = $response->get_data();
-    if ($user->user_login === $user->display_name) {
+    if (isset($data['username'])) {
         unset($data['username']);
+    }
+    if (!empty($user->nickname) && $user->nickname !== $user->user_login) {
+        $data['name'] = $user->nickname;
+    } else {
+        $data['name'] = 'Anonym';
     }
     return rest_ensure_response($data);
 }
 
-add_action('admin_notices', 'check_display_name_vs_username');
+// Admin-Warnung, wenn der öffentliche Name dem Benutzernamen entspricht
 function check_display_name_vs_username() {
-    $users = get_users();
-
-    if (empty($users)) {
-        echo '<div class="notice notice-info is-dismissible">
-            <p>Keine Benutzer gefunden.</p>
-        </div>';
-        return;
-    }
-
+    $users = get_users(array('fields' => array('ID', 'user_login', 'display_name')));
     foreach ($users as $user) {
-        echo '<div class="notice notice-info is-dismissible">
-            <p>Benutzer gefunden: ' . $user->user_login . ' | Display Name: ' . $user->display_name . ' | Nickname: ' . $user->nickname . '</p>
-        </div>';
-
         if ($user->user_login === $user->display_name) {
-            echo '<div class="notice notice-info is-dismissible">
-                <p>Der Display Name entspricht dem Benutzernamen für Benutzer: ' . $user->user_login . '</p>
-            </div>';
-
-            if (empty($user->nickname) || $user->nickname === $user->user_login) {
-                echo '<div class="notice notice-info is-dismissible">
-                    <p>Der Nickname ist leer oder entspricht dem Benutzernamen für Benutzer: ' . $user->user_login . '</p>
-                </div>';
-
-                echo '<div class="notice notice-warning is-dismissible">
-                    <p>Der angezeigte öffentliche Name für den Benutzer <strong>' . $user->user_login . '</strong> entspricht dem Benutzernamen. Dies kann ein Sicherheitsrisiko darstellen. Bitte ändern Sie den öffentlichen Namen oder setzen Sie einen Nicknamen.</p>
-                </div>';
-            } else {
-                echo '<div class="notice notice-info is-dismissible">
-                    <p>Der Nickname ist nicht leer und entspricht nicht dem Benutzernamen für Benutzer: ' . $user->user_login . '</p>
-                </div>';
-            }
-        } else {
-            echo '<div class="notice notice-info is-dismissible">
-                <p>Der Display Name entspricht nicht dem Benutzernamen für Benutzer: ' . $user->user_login . '</p>
+            echo '<div class="notice notice-warning is-dismissible">
+                <p>Der angezeigte öffentliche Name für den Benutzer <strong>' . esc_html($user->user_login) . '</strong> entspricht dem Benutzernamen. Dies kann ein Sicherheitsrisiko darstellen. Bitte ändern Sie den öffentlichen Namen.</p>
             </div>';
         }
     }
 }
 
-
-
-
-
-
-
-// Verhindern, dass Benutzernamen in Feed erscheinen
-add_filter('the_author', 'hide_feed_usernames');
-function hide_feed_usernames($name) {
-    return hide_usernames($name);
-}
-
-// Funktion zur Forcierung des Nicknames als Display Name, falls vorhanden
-function force_nickname_as_display_name($name, $user_id) {
+// Hook zum Speichern des Display-Namens
+function force_display_name_update($user_id, $old_user_data) {
     $user = get_userdata($user_id);
-    if ($user) {
-        // Wenn ein Nickname vorhanden ist, diesen verwenden
+
+    // Wenn der Display-Name dem Benutzernamen entspricht, auf Nickname setzen, falls vorhanden
+    if ($user->user_login === $user->display_name) {
         if (!empty($user->nickname)) {
-            return $user->nickname;
+            wp_update_user(array(
+                'ID' => $user_id,
+                'display_name' => $user->nickname
+            ));
+        } else {
+            wp_update_user(array(
+                'ID' => $user_id,
+                'display_name' => 'Anonym'
+            ));
         }
-        // Wenn kein Nickname vorhanden ist und der Display Name dem Benutzernamen entspricht, leeren String zurückgeben
-        if ($user->user_login === $user->display_name) {
-            return '';
-        }
-        return $user->display_name;
     }
-    return $name;
 }
 
-// Filter anwenden, um den Nickname als Display Name zu forcieren
-add_filter('the_author', 'force_nickname_as_display_name', 10, 2);
-add_filter('get_comment_author', 'force_nickname_as_display_name', 10, 2);
-
+// Verhindert die Anzeige von Benutzernamen in Menüs und ersetzt sie durch den Nicknamen oder "Anonym"
+function hide_usernames_in_menu($items, $args) {
+    foreach ($items as &$item) {
+        if ($item->object == 'user') {
+            $user = get_user_by('id', $item->object_id);
+            if ($user) {
+                if (!empty($user->nickname) && $user->nickname !== $user->user_login) {
+                    $item->title = $user->nickname;
+                } else {
+                    $item->title = 'Anonym';
+                }
+            }
+        }
+    }
+    return $items;
+}
 ?>
