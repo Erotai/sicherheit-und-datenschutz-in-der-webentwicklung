@@ -13,7 +13,7 @@ class TestIPBlocker
         $url = self::$base_url . '/wp-login.php?action=login';
         $agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
-        // Simulate multiple login attempts to trigger brute force detection
+        // Execute multiple login attempts to trigger brute force detection
         for ($i = 0; $i < 12; $i++) {
             $response = get($url, $agent);
             print_json($response);
@@ -30,7 +30,7 @@ class TestIPBlocker
         $agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
 
-        // Simulate accessing wp-config.php to trigger pattern detection
+        // Accessing wp-config.php to trigger pattern detection
         $response = get($url, $agent);
         print_json($response);
 
@@ -58,7 +58,7 @@ class TestIPBlocker
     }
 }
 
-// Execute Test Functions
+// Execute Test Function
 //TestIPBlocker::testBruteForceBlocking();
 //TestIPBlocker::testPatternBlocking();
 TestIPBlocker::testIPUnblocking();
