@@ -71,7 +71,6 @@ class Classifier
             'config-grabber' => '/\/wp-config.php/i',
             // pattern for scripts uses regEx expressions (NOT OPTIMAL!) [^e] --> find any char not between brackets (hello = hllo), n* --> matches if string contains zero or more occurrences of n
             'script-insert' => '/(<script[^>]*>.*?<\/script>|<iframe[^>]*>.*?<\/iframe>)/i',
-            //'file-access' => '/\/(searchreplacedb2\.php|wp-cron\.php|themes)/i'
         ];
 
         // Iterate over every key-value pair in the patterns array, class is set as the key and patterns as patterns

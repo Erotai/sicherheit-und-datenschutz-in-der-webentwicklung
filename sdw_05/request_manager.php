@@ -31,7 +31,7 @@ class RequestManager
         echo '
             <div class="notice notice-success is-dismissible">
                 <p>
-                    Plugin: Request-Manager loaded successfully!
+                    Plugin: Request-Manager wurde erfolgreich geladen!
                 </p>
             </div>
         ';

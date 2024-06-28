@@ -14,10 +14,10 @@ class IPBlocker
 {
     public static function init()
     {
-        $request_class = Classifier::classify_request();
+        //$request_class = Classifier::classify_request();
         // Set header
-        header("X-THMSEC: ENABLED");
-        header("X-THMSEC-CLASS: $request_class");
+        //header("X-THMSEC: ENABLED");
+        //header("X-THMSEC-CLASS: $request_class");
 
         // Use check_ip_block and store result
         $is_blocked = self::check_ip_block();
@@ -33,7 +33,7 @@ class IPBlocker
                 Log::log_access();
             }
 
-            die('AH AH AH You didn\'t say the magic word!');
+            die('Ihre IP-Adresse wurde blockiert aufgrund von Verdacht auf böswillige Absichten! Freigeben der IP-Adresse erfolgt nach 24 Stunden!');
         }
     }
 
