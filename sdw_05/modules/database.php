@@ -37,20 +37,46 @@ class Database
 
     public static function check_database_reset()
     {
+        $request_class = 'normal';
+
         global $wpdb;
         $db = $wpdb->prefix . self::$table_name;
 
-        $query = $wpdb->get_row($wpdb->prepare(
-            "SELECT time FROM $db WHERE time + INTERVAL 30 DAY < NOW() LIMIT 1"
+        // Get oldest malicious request
+        $query_malicious = $wpdb->get_row($wpdb->prepare(
+            "SELECT time FROM $db WHERE NOT request_class = %s AND time + INTERVAL 30 DAY < NOW() LIMIT 1", $request_class
         ));
 
-        // check if 30 Days have passed >= 30 Days
-        if ($query && $query->time) {
+        // Get oldest normal request
+        $query_normal = $wpdb->get_row($wpdb->prepare(
+            "SELECT time FROM $db WHERE request_class = %s AND time + INTERVAL 7 DAY < NOW() LIMIT 1", $request_class
+        ));
+
+        // check if 30 Days have passed and reset db
+        if ($query_malicious && $query_malicious->time) {
             // Reinstall db
             self::uninstall_db();
             self::install_db();
         }
 
+        // check if 7 Days have passed and delete normal requests
+        if ($query_normal && $query_normal->time) {
+            // Delete normal requests
+            self::delete_normal_requests();
+        }
+
+    }
+    /**
+     * Uninstall the database on the mysql server.
+     */
+    public static function delete_normal_requests() {
+        $request_class = 'normal';
+
+        global $wpdb;
+        $db = $wpdb->prefix . self::$table_name;
+        $table = "DELETE * FROM %s WHERE request_class = %s";
+        $wpdb->query($wpdb->prepare(($table), $db, $request_class
+        ));
     }
 
     /**
@@ -82,8 +108,6 @@ class Database
             method VARCHAR(32) NOT NULL,
             status VARCHAR(32) NOT NULL,
             agent VARCHAR(128) NOT NULL,
-            referer VARCHAR(128) NOT NULL,
-            sec_fetch_user VARCHAR(32) NOT NULL,
             request_class VARCHAR(128) NOT NULL,
             is_blocked BOOLEAN NOT NULL,
             blocked_at TIMESTAMP NULL DEFAULT NULL
@@ -114,8 +138,6 @@ class Database
         $method,
         $status,
         $agent,
-        $referer,
-        $sec_fetch_user,
         $request_class,
         $is_blocked,
         $blocked_at
@@ -129,8 +151,6 @@ class Database
                 'method' => $method,
                 'status' => $status,
                 'agent' => $agent,
-                'referer' => $referer,
-                'sec_fetch_user' => $sec_fetch_user,
                 'request_class' => $request_class,
                 'is_blocked' => $is_blocked,
                 'blocked_at' => $blocked_at

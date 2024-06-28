@@ -10,9 +10,11 @@ class TestClassifier
     public static function testBruteForceLogin()
     {
         $url = self::$base_url . '/wp-login.php?loggedout';
+        $agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
+        // Execute multiple access requests to trigger brute force detection
         for ($i = 0; $i < 12; $i++) {
-            $response = get($url);
+            $response = get($url, $agent);
             print_json($response);
         }
     }
@@ -20,9 +22,11 @@ class TestClassifier
     public static function testGeneralBruteForce()
     {
         $url = self::$base_url . '/wp-json/wp/v2/users/?per_page=100&page=1';
+        $agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
+        // Execute multiple access requests to trigger brute force detection
         for ($i = 0; $i < 105; $i++) {
-            $response = get($url);
+            $response = get($url, $agent);
             print_json($response);
         }
     }
@@ -30,9 +34,9 @@ class TestClassifier
     public static function testAccessToolDetection()
     {
         $url = self::$base_url . '/wp-json/wp/v2/posts';
-        $headers = ['User-Agent: TestTool'];
+        $agent = 'TestTool';
 
-        $response = get($url, $headers);
+        $response = get($url, $agent);
         print_json($response);
     }
 
@@ -40,21 +44,15 @@ class TestClassifier
     {
         $url = self::$base_url . '/wp-config.php';
 
-        $response = get($url);
+        $agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
+
+        $response = get($url, $agent);
         print_json($response);
 
-        $url = self::$base_url . '/';
-
-        $data = [
-            'content' => '<script>alert("XSS")</script>'
-        ];
-
-        $response = post($url, $data);
-        print_json($response);
     }
 }
 
-// Execute Test Functions
+// Execute Test Function
 TestClassifier::testBruteForceLogin();
 //TestClassifier::testGeneralBruteForce();
 //TestClassifier::testAccessToolDetection();

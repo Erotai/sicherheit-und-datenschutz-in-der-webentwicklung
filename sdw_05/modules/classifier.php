@@ -13,13 +13,7 @@ class Classifier
 {
     public static function init()
     {
-        $request_class = self::classify_request();
-
-        if ($request_class !== 'normal') {
-            header("HTTP/1.1 404 Not Found");
-            exit;
-        }
-
+        // HM
     }
 
     public static function classify_request(): string
@@ -49,10 +43,10 @@ class Classifier
             "SELECT COUNT(*) FROM $table_name WHERE client = %s AND time > now() - interval 5 minute", $ip
         ));
         // Set class to Brute Force if count exceeds 10 requests
-        if ($login_count >= 10) {
+        if ($login_count >= 9) {
 
             $request_class = 'brute-force';
-        } else if ($request_count >= 100) {
+        } else if ($request_count >= 99) {
 
             $request_class = 'brute-force';
         }
@@ -77,7 +71,6 @@ class Classifier
             'config-grabber' => '/\/wp-config.php/i',
             // pattern for scripts uses regEx expressions (NOT OPTIMAL!) [^e] --> find any char not between brackets (hello = hllo), n* --> matches if string contains zero or more occurrences of n
             'script-insert' => '/(<script[^>]*>.*?<\/script>|<iframe[^>]*>.*?<\/iframe>)/i',
-            //'file-access' => '/\/(searchreplacedb2\.php|wp-cron\.php|themes)/i'
         ];
 
         // Iterate over every key-value pair in the patterns array, class is set as the key and patterns as patterns
