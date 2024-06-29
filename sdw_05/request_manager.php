@@ -16,7 +16,6 @@ add_action('admin_notices', ['THM\Security\RequestManager', 'admin_notices'], 10
 define('MAIN_FILE', __FILE__);
 
 require_once(dirname(__FILE__) . '/modules/classifier.php');
-require_once(dirname(__FILE__) . '/modules/username-enumeration.php');
 require_once(dirname(__FILE__) . '/modules/log.php');
 require_once(dirname(__FILE__) . '/modules/leaks.php');
 

@@ -66,7 +66,6 @@ class Log
                 <th>IP</th>
                 <th>URL</th>
                 <th>Method</th>
-                <th>Status</th>
                 <th>User-Agent</th>
                 <th>Request-Class</th>
                 <th>Is-Blocked</th>
@@ -80,7 +79,6 @@ class Log
                     <td><?= esc_html($log->client) ?></td>
                     <td><?= esc_html($log->url) ?></td>
                     <td><?= esc_html($log->method) ?></td>
-                    <td><?= esc_html($log->status) ?></td>
                     <td><?= esc_html($log->agent) ?></td>
                     <td><?= esc_html($log->request_class) ?></td>
                     <td><?= esc_html($log->is_blocked) ?></td>
@@ -113,7 +111,6 @@ class Log
 
         // check if URI matches '/favicon.ico'
         if ($_SERVER['REQUEST_URI'] !== '/favicon.ico') {
-            $status_code = http_response_code();
             $request_class= Classifier::classify_request();
             $is_blocked = IPBlocker::check_ip_block();
             $blocked_at = IPBlocker::check_block_time();
@@ -122,7 +119,6 @@ class Log
                 $_SERVER['REMOTE_ADDR'],
                 $_SERVER['REQUEST_URI'],
                 $_SERVER['REQUEST_METHOD'],
-                $status_code,
                 $_SERVER['HTTP_USER_AGENT'],
                 $request_class,
                 $is_blocked,

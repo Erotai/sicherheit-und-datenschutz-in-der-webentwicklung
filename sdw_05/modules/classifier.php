@@ -36,18 +36,18 @@ class Classifier
          **/
         // get login request count from database
         $login_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute", $ip, $brute_force_login_uri
+            "SELECT COUNT(*) FROM %i WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute",$table_name, $ip, $brute_force_login_uri
         ));
         // get count of spam or other brute force type attacks
         $request_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE client = %s AND time > now() - interval 5 minute", $ip
+            "SELECT COUNT(*) FROM %i WHERE client = %s AND time > now() - interval 5 minute",$table_name, $ip
         ));
         // Set class to Brute Force if count exceeds 10 requests
         if ($login_count >= 9) {
-
-            $request_class = 'brute-force';
-        } else if ($request_count >= 99) {
-
+            // Set class
+            $request_class = 'brute-force-login';
+        } else if ($request_count >= 49) {
+            // Set class
             $request_class = 'brute-force';
         }
 

@@ -6,7 +6,7 @@ Das Classifier Module dient zur Überprüfung von eingehenden Anfragen, ob diese
 
 ## Technische Beschreibung
 
-Das Module ist klassenorientiert aufgebaut und ruft keine eigenen Methoden auf. Die enthaltenen Funktionen werden von anderen Modulen wie dem **'ip-blocker.php'** und **'log.php'** verwendet, um die Klasse einer Anfrage zu definieren.
+Das Module ist klassenorientiert aufgebaut und ruft keine eigenen Methoden auf. Die enthaltenen Funktionen werden von anderen Modulen wie dem **['ip-blocker'](../docs/ip-blocker.md)** und **['log'](../docs/log.md)** verwendet, um die Klasse einer Anfrage zu definieren.
 
 ## Verwendete personenbezogene Daten
 
@@ -29,11 +29,11 @@ Diese Funktion dient zur Unterteilung der eingehenden Anfragen in Klassen. Dabei
 Die Brute Force Detection wiederum wird in zwei Kategorien unterteilt: **'Brute Force Login'** auf der **'wp-login'** Seite und **'General Brute Force'** auf der gesamten Website. Ein Brute Force Angriff wird als **'Brute Force Login'** identifiziert, wenn die Datenbank **10** Einlogversuche der **selben** IP-Adresse in den letzten **10 Minuten** erhalten hat.
 Dies geschieht durch folgende SQL Query:
 
-`"SELECT COUNT(*) FROM $table_name WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute", $ip, $brute_force_login_uri`.
+`"SELECT COUNT(*) FROM %i WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute", $table_name, $ip, $brute_force_login_uri`.
 
-Wiederum ein Brute Force Angriff auf jegliche andere Seiten wird ab **100** Anfragen von der **selben** IP-Adresse innerhalb der letzten **5 Minuten** registriert. Dies geschieht durch folgende SQL Query:
+Wiederum ein Brute Force Angriff auf jegliche andere Seiten wird ab **50** Anfragen von der **selben** IP-Adresse innerhalb der letzten **5 Minuten** registriert. Dies geschieht durch folgende SQL Query:
 
-`"SELECT COUNT(*) FROM $table_name WHERE client = %s AND time > now() - interval 5 minute", $ip`    
+`"SELECT COUNT(*) FROM %i WHERE client = %s AND time > now() - interval 5 minute", $table_name, $ip`    
 
 Zur Sicherung gegen SQL Injections wurden `Tokens` in der SQL-Abfrage und `$wpdb->prepare` verwendet.
 
@@ -55,11 +55,11 @@ Die Pattern Detection verwendet zur Überprüfung ein Array aus Key-Value Pairs,
 
 Beispiel:
 ````
-*** SPEICHERN DES ERGEBNISSES IN EINER VARIABLE ***
+**** SPEICHERN DES ERGEBNISSES IN EINER VARIABLE ****
 $klassifizierung_der_aktuellen_anfrage = classify_request();
 
-*** AUSGABE DER VAIRABLE ***
-print $klassifizierung_der_aktuellen_anfrage;
+**** AUSGABE DER VAIRABLE ****
+echo $klassifizierung_der_aktuellen_anfrage;
 
 > normal
 
@@ -122,5 +122,8 @@ Ihre IP-Adresse wurde blockiert aufgrund von Verdacht auf böswillige Absichten!
 Klassifizierung = `'config-grabber'`.
 
 ## Navigation
- - [Plugin-README]()
- - ...
+ - [plugin: README](../README.md)
+ - [database: README](../docs/database.md)
+ - [log: README](../docs/log.md)
+ - [ip-blocker: README](../docs/ip-blocker.md)
+ - [leaks: README](../docs/leaks.md)

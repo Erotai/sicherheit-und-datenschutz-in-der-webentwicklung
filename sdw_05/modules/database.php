@@ -10,7 +10,8 @@ register_activation_hook(MAIN_FILE, ['THM\Security\Database', 'init']);
 register_deactivation_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
 register_uninstall_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);
 
-add_action('wp_loaded', ['\THM\Security\Database', 'check_database_reset']);
+//add_action('wp_loaded', ['\THM\Security\Database', 'check_database_reset']);
+add_action('database_check_cron_job', ['THM\Security\Database', 'check_database_reset']);
 
 /**
  * Database module for the THM Security plugin.
@@ -19,7 +20,6 @@ add_action('wp_loaded', ['\THM\Security\Database', 'check_database_reset']);
 class Database
 {
 
-    //private static $db_version = '0';
     private static $table_name = 'request_manager_access_log';
 
     /**
@@ -28,10 +28,10 @@ class Database
     public static function init()
     {
         self::install_db();
-        /*if (get_site_option(self::$table_name . '_db_version') != self::$db_version) {
-
-            self::install_db();
-        }*/
+        // Set database check cron Event
+        if (!wp_next_scheduled('database_check_cron_job')) {
+            wp_schedule_event(time(), 'daily', 'database_check_cron_job');
+        }
 
     }
 
@@ -44,12 +44,12 @@ class Database
 
         // Get oldest malicious request
         $query_malicious = $wpdb->get_row($wpdb->prepare(
-            "SELECT time FROM $db WHERE NOT request_class = %s AND time + INTERVAL 30 DAY < NOW() LIMIT 1", $request_class
+            "SELECT time FROM %i WHERE NOT request_class = %s AND time + INTERVAL 30 DAY < NOW() LIMIT 1", $db, $request_class
         ));
 
         // Get oldest normal request
         $query_normal = $wpdb->get_row($wpdb->prepare(
-            "SELECT time FROM $db WHERE request_class = %s AND time + INTERVAL 7 DAY < NOW() LIMIT 1", $request_class
+            "SELECT time FROM %i WHERE request_class = %s AND time + INTERVAL 7 DAY < NOW() LIMIT 1", $db, $request_class
         ));
 
         // check if 30 Days have passed and reset db
@@ -74,8 +74,8 @@ class Database
 
         global $wpdb;
         $db = $wpdb->prefix . self::$table_name;
-        $table = "DELETE * FROM %s WHERE request_class = %s";
-        $wpdb->query($wpdb->prepare(($table), $db, $request_class
+        $query = "DELETE FROM %i WHERE request_class = %s";
+        $wpdb->query($wpdb->prepare(($query),$db, $request_class
         ));
     }
 
@@ -85,10 +85,13 @@ class Database
 
     public static function uninstall_db()
     {
+        wp_clear_scheduled_hook('database_check_cron_job');
+
         global $wpdb;
         $db = $wpdb->prefix . self::$table_name;
-        $table = "DROP TABLE IF EXISTS $db";
-        $wpdb->query($table);
+        $query = "DROP TABLE IF EXISTS %i";
+        $wpdb->query($wpdb->prepare(($query), $db
+        ));
     }
 
     /**
@@ -106,7 +109,6 @@ class Database
             client VARCHAR(32) NOT NULL,
             url VARCHAR(128) NOT NULL,
             method VARCHAR(32) NOT NULL,
-            status VARCHAR(32) NOT NULL,
             agent VARCHAR(128) NOT NULL,
             request_class VARCHAR(128) NOT NULL,
             is_blocked BOOLEAN NOT NULL,
@@ -115,7 +117,6 @@ class Database
 		) $charset_collate;";
         dbDelta($table);
 
-        //update_site_option(self::$table_name . '_db_version', self::$db_version);
     }
 
     /**
@@ -125,7 +126,8 @@ class Database
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_name;
-        $logs = $wpdb->get_results("SELECT * FROM $table_name");
+        $logs = $wpdb->get_results($wpdb->prepare(("SELECT * FROM %i ORDER BY time ASC LIMIT 50"), $table_name
+        ));
         return $logs;
     }
 
@@ -136,7 +138,6 @@ class Database
         $client,
         $url,
         $method,
-        $status,
         $agent,
         $request_class,
         $is_blocked,
@@ -149,7 +150,6 @@ class Database
             ['client' => $client,
                 'url' => $url,
                 'method' => $method,
-                'status' => $status,
                 'agent' => $agent,
                 'request_class' => $request_class,
                 'is_blocked' => $is_blocked,

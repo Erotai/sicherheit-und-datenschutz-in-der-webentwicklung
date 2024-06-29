@@ -50,29 +50,54 @@ class IPBlocker
 
         // get block status form database
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT is_blocked, blocked_at FROM $table_name WHERE client = %s AND is_blocked = 1 ", $ip // %s is a placeholder for the IP
+            "SELECT is_blocked, blocked_at FROM %i WHERE client = %s AND is_blocked = 1",$table_name, $ip
         ));
 
         // check if ip is blocked
         if ($result && $result->is_blocked) {
-            // set blocked_at from query result and get current time
+            // request_class var for selecting right database entries
+            $brute_force_class = 'brute-force-login';
 
+            // get every entry except brute-force-login
             $query = $wpdb->get_row($wpdb->prepare(
-                "SELECT blocked_at FROM $table_name WHERE blocked_at + INTERVAL 24 HOUR < NOW() LIMIT 1"
+                "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 24 HOUR < NOW() AND NOT request_class = %s LIMIT 1", $table_name, $brute_force_class
             ));
 
-            // check if the ip was blocked over 24 hours ago -> 24 hours in seconds: 86400
+            // check if entry exists and update entry
             if ($query && $query->blocked_at) {
                 // new vars
                 $set_new_state = 0;
                 $set_new_date = '0000-00-00 00:00:00';
+
                 // update Database
                 $wpdb->query($wpdb->prepare(
-                    "UPDATE $table_name SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1", $set_new_state, $set_new_date, $ip
+                    "UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1",$table_name, $set_new_state, $set_new_date, $ip
                 ));
+
                 // Unblock the IP
                 return false;
             }
+
+            // Get brute-force-login entry specific
+            $query_brute_force_login = $wpdb->get_row($wpdb->prepare(
+                "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 1 HOUR < NOW() AND request_class = %s LIMIT 1", $table_name, $brute_force_class
+            ));
+
+            // check if entry exists and update entry
+            if ($query_brute_force_login && $query_brute_force_login->blocked_at) {
+                // new vars
+                $set_new_state = 0;
+                $set_new_date = '0000-00-00 00:00:00';
+
+                // update Database
+                $wpdb->query($wpdb->prepare(
+                    "UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1",$table_name, $set_new_state, $set_new_date, $ip
+                ));
+
+                // Unblock the IP
+                return false;
+            }
+
             // IP is Blocked
             return true;
         }
@@ -107,7 +132,7 @@ class IPBlocker
 
         // Database query for getting last log of an IP
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT is_blocked FROM $table_name WHERE client = %s AND is_blocked = 1 ORDER BY time DESC LIMIT 1", $ip // %s is a placeholder for the IP
+            "SELECT is_blocked FROM %i WHERE client = %s AND is_blocked = 1 ORDER BY time DESC LIMIT 1", $table_name, $ip // %s is a placeholder for the IP
         ));
 
         // Check if is blocked is true
