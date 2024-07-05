@@ -12,7 +12,6 @@ require_once(dirname(__FILE__) . '/ip-blocker.php');
 
 add_action('admin_menu', ['\THM\Security\Log', 'add_menu']);
 add_action('wp_loaded', ['\THM\Security\Log', 'log_access']);
-//add_action('wp_loaded', ['\THM\Security\Log', 'wp_scan_deflect_user']);
 add_filter('xmlrpc_enabled', '__return_false');
 
 /**
@@ -91,19 +90,6 @@ class Log
     }
 
     /**
-     * Renders the empty page tab on the management page.
-     */
-    private static function render_empty_page()
-    {
-        ?>
-        <p>
-            Dies ist eine leere Seite.<br>
-            Sie können beliebig viele weitere Seiten hinzufügen.
-        </p>
-        <?php
-    }
-
-    /**
      * Logs any access to the website into the database.
      */
     public static function log_access()
@@ -128,16 +114,6 @@ class Log
         }
     }
 
-   /* public static function wp_scan_deflect_user() {
-        // deny finding with method wp-json
-        if (strpos($_SERVER['REQUEST_URI'],'wp-json')) {
-            die();
-        }
-        // confirmation denying
-        if (preg_match('/\?author=([0-9]*)(\/*)/i', $_SERVER['REQUEST_URI'])) {
-            die();
-        }
-    }*/
 }
 
 ?>
