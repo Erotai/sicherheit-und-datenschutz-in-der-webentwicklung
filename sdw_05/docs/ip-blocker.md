@@ -150,8 +150,9 @@ echo $log_exists;
 ````
 
 ## Navigation
-- [plugin: README](../README.md)
-- [database: README](../docs/database.md)
-- [log: README](../docs/log.md)
-- [classifier: README](../docs/classifier.md)
-- [leaks: README](../docs/leaks.md)
+- [Plugin](../README.md)
+- [Leaks](../docs/leaks.md)
+- [Classifier](../docs/classifier.md)
+- [IP-Blocker](../docs/ip-blocker.md)
+- [Database](../docs/database)
+- [Log](../docs/log.md)

@@ -122,8 +122,9 @@ Ihre IP-Adresse wurde blockiert aufgrund von Verdacht auf böswillige Absichten!
 Klassifizierung = `'config-grabber'`.
 
 ## Navigation
- - [plugin: README](../README.md)
- - [database: README](../docs/database.md)
- - [log: README](../docs/log.md)
- - [ip-blocker: README](../docs/ip-blocker.md)
- - [leaks: README](../docs/leaks.md)
+- [Plugin](../README.md)
+- [Leaks](../docs/leaks.md)
+- [Classifier](../docs/classifier.md)
+- [IP-Blocker](../docs/ip-blocker.md)
+- [Database](../docs/database)
+- [Log](../docs/log.md)

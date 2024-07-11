@@ -147,8 +147,9 @@ append_access_log($client, $url, $method, $agent, $request_class, $is_blocked, $
 ````
 
 ## Navigation
-- [plugin: README](../README.md)
-- [log: README](../docs/log.md)
-- [classifier: README](../docs/classifier.md)
-- [ip-blocker: README](../docs/ip-blocker.md)
-- [leaks: README](../docs/leaks.md)
+- [Plugin](../README.md)
+- [Leaks](../docs/leaks.md)
+- [Classifier](../docs/classifier.md)
+- [IP-Blocker](../docs/ip-blocker.md)
+- [Database](../docs/database)
+- [Log](../docs/log.md)
