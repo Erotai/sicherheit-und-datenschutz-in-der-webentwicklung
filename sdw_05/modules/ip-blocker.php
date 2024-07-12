@@ -14,10 +14,10 @@ class IPBlocker
 {
     public static function init()
     {
-        //$request_class = Classifier::classify_request();
+        /*//$request_class = Classifier::classify_request();
         // Set header
         //header("X-THMSEC: ENABLED");
-        //header("X-THMSEC-CLASS: $request_class");
+        //header("X-THMSEC-CLASS: $request_class");*/
 
         // Use check_ip_block and store result
         $is_blocked = self::check_ip_block();
@@ -33,7 +33,7 @@ class IPBlocker
                 Log::log_access();
             }
 
-            die('Ihre IP-Adresse wurde blockiert aufgrund von Verdacht auf böswillige Absichten! Freigeben der IP-Adresse erfolgt nach 24 Stunden!');
+            die('Ihre IP-Adresse wurde blockiert aufgrund von Verdacht auf böswillige Absichten!');
         }
     }
 
@@ -50,8 +50,12 @@ class IPBlocker
 
         // get block status form database
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT is_blocked, blocked_at FROM %i WHERE client = %s AND is_blocked = 1",$table_name, $ip
+            "SELECT is_blocked, blocked_at FROM %i WHERE client = %s AND is_blocked = 1", $table_name, $ip
         ));
+
+        /**
+         * Check for currently Blocked Addresses.
+         */
 
         // check if ip is blocked
         if ($result && $result->is_blocked) {
@@ -63,6 +67,10 @@ class IPBlocker
                 "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 24 HOUR < NOW() AND NOT request_class = %s LIMIT 1", $table_name, $brute_force_class
             ));
 
+            /**
+             * Unblock Malicious IP-Addresses.
+             */
+
             // check if entry exists and update entry
             if ($query && $query->blocked_at) {
                 // new vars
@@ -71,7 +79,7 @@ class IPBlocker
 
                 // update Database
                 $wpdb->query($wpdb->prepare(
-                    "UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1",$table_name, $set_new_state, $set_new_date, $ip
+                    "UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1", $table_name, $set_new_state, $set_new_date, $ip
                 ));
 
                 // Unblock the IP
@@ -83,6 +91,10 @@ class IPBlocker
                 "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 1 HOUR < NOW() AND request_class = %s LIMIT 1", $table_name, $brute_force_class
             ));
 
+            /**
+             * Unblock Brute-Force-Login IP-Addresses.
+             */
+
             // check if entry exists and update entry
             if ($query_brute_force_login && $query_brute_force_login->blocked_at) {
                 // new vars
@@ -91,7 +103,7 @@ class IPBlocker
 
                 // update Database
                 $wpdb->query($wpdb->prepare(
-                    "UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1",$table_name, $set_new_state, $set_new_date, $ip
+                    "UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1", $table_name, $set_new_state, $set_new_date, $ip
                 ));
 
                 // Unblock the IP
@@ -102,13 +114,17 @@ class IPBlocker
             return true;
         }
 
+        /**
+         * Block Malicious IP-Addresses.
+         */
+
         // Check if request class is not normal
         if ($request_class !== 'normal') {
             // Block ip if not normal
             return true;
         }
 
-        // IP Not Blocked
+        // If every test was negative return false
         return false;
     }
 

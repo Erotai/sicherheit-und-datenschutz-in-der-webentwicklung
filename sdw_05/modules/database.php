@@ -52,11 +52,10 @@ class Database
             "SELECT time FROM %i WHERE request_class = %s AND time + INTERVAL 7 DAY < NOW() LIMIT 1", $db, $request_class
         ));
 
-        // check if 30 Days have passed and reset db
+        // check if 30 Days have passed and delete malicious requests
         if ($query_malicious && $query_malicious->time) {
-            // Reinstall db
-            self::uninstall_db();
-            self::install_db();
+            // Delete malicious requests
+            self::delete_malicious_requests();
         }
 
         // check if 7 Days have passed and delete normal requests
@@ -67,7 +66,7 @@ class Database
 
     }
     /**
-     * Uninstall the database on the mysql server.
+     * Delete normal requests.
      */
     public static function delete_normal_requests() {
         $request_class = 'normal';
@@ -75,6 +74,19 @@ class Database
         global $wpdb;
         $db = $wpdb->prefix . self::$table_name;
         $query = "DELETE FROM %i WHERE request_class = %s";
+        $wpdb->query($wpdb->prepare(($query),$db, $request_class
+        ));
+    }
+
+    /**
+     * Delete malicious requests.
+     */
+    public static function delete_malicious_requests() {
+        $request_class = 'normal';
+
+        global $wpdb;
+        $db = $wpdb->prefix . self::$table_name;
+        $query = "DELETE FROM %i WHERE NOT request_class = %s";
         $wpdb->query($wpdb->prepare(($query),$db, $request_class
         ));
     }
