@@ -73,30 +73,24 @@ Bei der Nutzung des THM Security Plugins werden folgende personenbezogene Daten 
 - Klassifizierung der Anfrage: Identifiziert und kategorisiert Anfragen als normal oder böswillig.
 - Blockierungsstatus und Zeitpunkt: Zeigt an, ob eine IP-Adresse blockiert wurde und wann dies geschah.
 
-#### 4. Änderung des Anzeigenamens
 
-Das Plugin verhindert die Anzeige von Benutzernamen an öffentlichen Orten und ersetzt diese durch den Nicknamen oder "Anonym". Es werden folgende Daten verarbeitet:
-
-- Benutzername
-- Nickname
-
-#### 5. Zweck der Datenverarbeitung
+#### 4. Zweck der Datenverarbeitung
 Die erhobenen Daten werden zu folgenden Zwecken verarbeitet:
 
 - Sicherheitsüberwachung: Überwachung und Analyse des Datenverkehrs zur Erkennung und Abwehr böswilliger Angriffe.
 - IP-Blockierung: Automatisches Blockieren von IP-Adressen, die verdächtige Aktivitäten zeigen.
 - Datenbankverwaltung: Speicherung und Analyse der Anfragen zur Verbesserung der Sicherheitsmaßnahmen.
 
-#### 6. Rechtsgrundlage der Verarbeitung
+#### 5. Rechtsgrundlage der Verarbeitung
 Die Verarbeitung der Daten erfolgt auf Grundlage des berechtigten Interesses gemäß Art. 6 Abs. 1 lit. f DSGVO, um die Sicherheit der Website zu gewährleisten.
 
-#### 7. Weitergabe der Daten
+#### 6. Weitergabe der Daten
 Die erhobenen Daten werden nicht an Dritte weitergegeben, es sei denn, dies ist gesetzlich vorgeschrieben oder zur Verhinderung bzw. Aufklärung von Straftaten erforderlich.
 
-#### 8. Speicherdauer
+#### 7. Speicherdauer
 Die Daten werden nur so lange gespeichert, wie es für die Erreichung der oben genannten Zwecke erforderlich ist. IP-Adressen und Anfragedaten, die als normal eingestuft werden, werden nach 7 Tagen gelöscht. Böswillige Anfragen werden nach 30 Tagen gelöscht.
 
-#### 9.Betroffenenrechte
+#### 8.Betroffenenrechte
 Sie haben das Recht:
 
 - Auskunft über Ihre bei uns gespeicherten Daten zu erhalten.
@@ -107,7 +101,7 @@ Sie haben das Recht:
 - Ihre Daten in einem strukturierten, gängigen und maschinenlesbaren Format zu erhalten (Datenübertragbarkeit).
 - Zur Ausübung Ihrer Rechte können Sie uns unter den oben angegebenen Kontaktdaten erreichen.
 
-#### 10. Änderungen dieser Datenschutzerklärung
+#### 9. Änderungen dieser Datenschutzerklärung
 Wir behalten uns das Recht vor, diese Datenschutzerklärung zu ändern, um sie an geänderte Rechtslagen oder bei Änderungen des Dienstes sowie der Datenverarbeitung anzupassen. Die aktuelle Version finden Sie stets auf unserer Website.
 
 ## Genauere Beschreibung der Funktionen des Plugins
