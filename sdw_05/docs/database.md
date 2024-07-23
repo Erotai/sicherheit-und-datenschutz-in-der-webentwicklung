@@ -90,5 +90,4 @@ Weiterhin wird für das Hinzufügen der Daten `'$wpdb->insert(...)` mit den glei
 - [Leaks](../docs/leaks.md)
 - [Classifier](../docs/classifier.md)
 - [IP-Blocker](../docs/ip-blocker.md)
-- [Database](../docs/database)
 - [Log](../docs/log.md)

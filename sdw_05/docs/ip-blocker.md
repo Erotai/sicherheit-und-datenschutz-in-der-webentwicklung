@@ -90,6 +90,5 @@ Falls das Ergebnis der SQL-Query das column `'is_blocked'` mit dem Wert `'true'`
 - [Plugin](/README.md)
 - [Leaks](../docs/leaks.md)
 - [Classifier](../docs/classifier.md)
-- [IP-Blocker](../docs/ip-blocker.md)
 - [Database](../docs/database)
 - [Log](../docs/log.md)
