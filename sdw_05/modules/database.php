@@ -19,7 +19,6 @@ add_action('database_check_cron_job', ['THM\Security\Database', 'check_database_
 
 class Database
 {
-
     private static $table_name = 'request_manager_access_log';
 
     /**
@@ -138,7 +137,7 @@ class Database
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_name;
-        $logs = $wpdb->get_results($wpdb->prepare(("SELECT * FROM %i ORDER BY time ASC LIMIT 50"), $table_name
+        $logs = $wpdb->get_results($wpdb->prepare(("SELECT * FROM %i ORDER BY time LIMIT 50"), $table_name
         ));
         return $logs;
     }

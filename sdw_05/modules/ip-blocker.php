@@ -14,11 +14,6 @@ class IPBlocker
 {
     public static function init()
     {
-        /*//$request_class = Classifier::classify_request();
-        // Set header
-        //header("X-THMSEC: ENABLED");
-        //header("X-THMSEC-CLASS: $request_class");*/
-
         // Use check_ip_block and store result
         $is_blocked = self::check_ip_block();
 
@@ -48,13 +43,13 @@ class IPBlocker
         $table_name = $wpdb->prefix . 'request_manager_access_log';
         $ip = $_SERVER['REMOTE_ADDR'];
 
-        // get block status form database
+        // get block status of current Address form database
         $result = $wpdb->get_row($wpdb->prepare(
             "SELECT is_blocked, blocked_at FROM %i WHERE client = %s AND is_blocked = 1", $table_name, $ip
         ));
 
         /**
-         * Check for currently Blocked Addresses.
+         * Check if IP is blocked.
          */
 
         // check if ip is blocked
@@ -62,14 +57,14 @@ class IPBlocker
             // request_class var for selecting right database entries
             $brute_force_class = 'brute-force-login';
 
-            // get every entry except brute-force-login
-            $query = $wpdb->get_row($wpdb->prepare(
-                "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 24 HOUR < NOW() AND NOT request_class = %s LIMIT 1", $table_name, $brute_force_class
-            ));
-
             /**
              * Unblock Malicious IP-Addresses.
              */
+
+            // get current blocked_at except brute-force-login --> if 24 hour has passed
+            $query = $wpdb->get_row($wpdb->prepare(
+                "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 24 HOUR < NOW() AND NOT request_class = %s LIMIT 1", $table_name, $brute_force_class
+            ));
 
             // check if entry exists and update entry
             if ($query && $query->blocked_at) {
@@ -86,14 +81,14 @@ class IPBlocker
                 return false;
             }
 
-            // Get brute-force-login entry specific
-            $query_brute_force_login = $wpdb->get_row($wpdb->prepare(
-                "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 1 HOUR < NOW() AND request_class = %s LIMIT 1", $table_name, $brute_force_class
-            ));
-
             /**
              * Unblock Brute-Force-Login IP-Addresses.
              */
+
+            // Get brute-force-login entry specific --> if 1 hour has passed
+            $query_brute_force_login = $wpdb->get_row($wpdb->prepare(
+                "SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 1 HOUR < NOW() AND request_class = %s LIMIT 1", $table_name, $brute_force_class
+            ));
 
             // check if entry exists and update entry
             if ($query_brute_force_login && $query_brute_force_login->blocked_at) {

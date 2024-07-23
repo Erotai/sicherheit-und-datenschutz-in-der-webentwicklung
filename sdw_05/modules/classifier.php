@@ -4,17 +4,11 @@ namespace THM\Security;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-add_filter('init', ['THM\Security\Classifier', 'init'], 5);
-
 /**
  * Classifier module for the THM Security plugin.
  */
 class Classifier
 {
-    public static function init()
-    {
-        // HM
-    }
 
     public static function classify_request(): string
     {

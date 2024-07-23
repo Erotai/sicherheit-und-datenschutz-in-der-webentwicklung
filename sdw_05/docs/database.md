@@ -18,7 +18,7 @@ Das Module ist klassenorientiert aufgebaut und benutzt Methoden zur Installation
 
 - `register_activation_hook(MAIN_FILE, ['THM\Security\Database', 'init']);` registriert die Methode `'init'` mit dem Hook `'register_activation_hook'`. Der Hook wurde gewählt, um die Datenbank mit Cron-Job bei Aktivierung des Plugins zu inizialisieren.
 - `register_deactivation_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);` registriert die Methode `'uninstall_db'` mit dem Hook `'register_deactivation_hook'`. Der Hook wurde gewählt, um die Datenbank bei Deaktivierung des Plugins zu deinstallieren.
-- `register_uninstall_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);` registriert die Methode `'uninstall_db'` mit dem Hook `'register_uninstall_hook'`. Der Hook wurde gewählt, um die Datenbank bei Deinstallierung des Plugins ui deinstallieren.
+- `register_uninstall_hook(MAIN_FILE, ['THM\Security\Database', 'uninstall_db']);` registriert die Methode `'uninstall_db'` mit dem Hook `'register_uninstall_hook'`. Der Hook wurde gewählt, um die Datenbank bei Deinstallierung des Plugins deinstallieren.
 - `add_action('database_check_cron_job', ['THM\Security\Database', 'check_database_reset']);` registriert die Methode `'check_database_reset'` für den Cron-Job  `'database_check_cron_job'`.
 
 ## Verwendete Funktionen
@@ -122,32 +122,8 @@ $table_name,
 ])
 ````
 
-## Anwendung verwendeter Funktionen
-
-### 1. `get_access_log() {...}`
-
-Beispiel:
-````
-**** SPEICHERN DES ERGEBNISSES IN EINER VARIABLE ****
-$logs = get_access_log()
-
-**** AUSGABE DER VAIRABLE ****
-echo $logs
-
-> TABELLE HINZUFÜGEN NICHT VERGESSEN
-
-````
-
-### 1. `append_access_log($client, $url, $method, $agent, $request_class, $is_blocked, $blocked_at) {...}`
-
-Beispiel:
-````
-**** PARAMETER DER FUNKTION MIT VARIABLEN FÜLLEN ****
-append_access_log($client, $url, $method, $agent, $request_class, $is_blocked, $blocked_at)
-````
-
 ## Navigation
-- [Plugin](../README.md)
+- [Plugin](/README.md)
 - [Leaks](../docs/leaks.md)
 - [Classifier](../docs/classifier.md)
 - [IP-Blocker](../docs/ip-blocker.md)
