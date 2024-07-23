@@ -58,12 +58,14 @@ Zur Ausübung Ihrer Rechte können Sie uns unter den oben angegebenen Kontaktdat
 
 9. Änderungen dieser Datenschutzerklärung
    Wir behalten uns das Recht vor, diese Datenschutzerklärung zu ändern, um sie an geänderte Rechtslagen oder bei Änderungen des Dienstes sowie der Datenverarbeitung anzupassen. Die aktuelle Version finden Sie stets auf unserer Website.
+
+
 ## Wichtige Informationen für Admins auf einem Blick
 ...
 
 ## Was für Funktionen bietet unser Plugin?
 
-### 1. Verschlerierung von Nutzernamen
+### 1. Verschleierung von Nutzernamen
 ... Erklärung warum dies das
 
 ### 2. Klassifizieren von eingehenden Anfragen

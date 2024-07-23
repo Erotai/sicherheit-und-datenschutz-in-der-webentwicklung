@@ -77,9 +77,6 @@ Diese Funktion zeigt eine Admin-Warnung an, wenn der öffentliche Name eines Ben
 
 Diese Funktion erzwingt die Aktualisierung des öffentlichen Namens auf den Nicknamen oder "Anonym", falls der öffentliche Name dem Benutzernamen entspricht.
 
-### 6. `hide_usernames_in_menu($items, $args): array`
-
-Diese Funktion ersetzt Benutzernamen in Menüs durch den Nicknamen oder "Anonym".
 
 ## Anwendung der Funktionen
 
@@ -120,14 +117,7 @@ Beispiel:
 ```php
 force_display_name_update(1, $old_user_data); // Aktualisiert den öffentlichen Namen, falls nötig.
 ```
-### 6. hide_usernames_in_menu($items, $args): array
-Beispiel:
 
-```php
-
-$menu_items = hide_usernames_in_menu($items, $args);
-print_r($menu_items); // Zeigt die Menüeinträge mit Nicknamen oder 'Anonym'.
-```
 ## Beispiele von Funktionsaufrufen
 ### 1. Normale Anwendung
 ```php
