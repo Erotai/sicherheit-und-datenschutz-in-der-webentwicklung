@@ -1,12 +1,12 @@
-# sdw_05 Plugin
+# Leaks Modul
 
 ## Beschreibung
 
-Das `sdw_05` Plugin verhindert die Anzeige von Benutzernamen an öffentlichen Orten und ersetzt sie durch den Nicknamen oder "Anonym".
+Das `leaks` Modul verhindert die Anzeige von Benutzernamen an öffentlichen Orten und ersetzt sie durch den Nicknamen oder "Anonym".
 
 ## Technische Beschreibung
 
-Das Plugin verwendet verschiedene Hooks und Filter, um die Anzeige von Benutzernamen zu verhindern und stattdessen Nicknamen oder "Anonym" anzuzeigen. Es registriert diese Hooks und Filter bei der Initialisierung.
+Das Modul verwendet verschiedene Hooks und Filter, um die Anzeige von Benutzernamen zu verhindern und stattdessen Nicknamen oder "Anonym" anzuzeigen. Es registriert diese Hooks und Filter bei der Initialisierung.
 
 ## Verwendete personenbezogene Daten
 

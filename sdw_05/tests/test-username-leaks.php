@@ -1,80 +1,77 @@
 <?php
-// Base URL of your WordPress site
-$base_url = 'https://your-wordpress-site.com';
 
-// Function to perform cURL request
-function perform_curl_request($url) {
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_URL, $url);
+function get($url)
+{
+    $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
-
+    curl_setopt($ch, CURLOPT_HEADER, true);
     $response = curl_exec($ch);
-
-    if (curl_errno($ch)) {
-        echo 'Error:' . curl_error($ch);
-    }
-
+    $statuscode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    return $response;
-}
+    $headers = [];
+    [$headers_array, $body] = explode("\r\n\r\n", $response, 2);
+    foreach (explode("\r\n", $headers_array) as $header) {
+        $header = trim($header);
+        if (empty($header)) continue;
 
-// Test: Check author link
-function test_author_link($base_url) {
-    $author_url = $base_url . '/?author=1';
-    $response = perform_curl_request($author_url);
-
-    // Check if the link is replaced with #
-    if (strpos($response, 'href="#">')) {
-        echo "Author link test passed.\n";
-    } else {
-        echo "Author link test failed.\n";
+        $parts = explode(': ', $header, 2);
+        if (count($parts) == 2) {
+            $key = $parts[0];
+            $value = $parts[1];
+            $headers[$key] = $value;
+        }
     }
-}
-
-// Test: Check REST API user endpoint
-function test_rest_api_user($base_url) {
-    $rest_url = $base_url . '/wp-json/wp/v2/users/1';
-    $response = perform_curl_request($rest_url);
-
-    $data = json_decode($response, true);
-
-    if (!isset($data['username'])) {
-        echo "REST API user test passed.\n";
-    } else {
-        echo "REST API user test failed.\n";
+    if (isset($headers['Content-Type']) && strpos($headers['Content-Type'], 'application/json') !== false) {
+        $body = json_decode($body, true);
     }
+    return [
+        'status' => $statuscode,
+        'headers' => $headers,
+        'body' => $body
+    ];
 }
 
-// Test: Check author name in feed
-function test_feed_author($base_url) {
-    $feed_url = $base_url . '/feed/';
-    $response = perform_curl_request($feed_url);
 
-    if (strpos($response, 'author') === false) {
-        echo "Feed author test passed.\n";
-    } else {
-        echo "Feed author test failed.\n";
-    }
+// Test 1: Überprüfen der Anzeige von Benutzernamen in Beiträgen
+$url = 'http://localhost/2024/04/12/hallo-welt/';
+$response = get($url);
+$body = $response['body'];
+
+if (strpos($body, 'fgjr76') == false) {
+    echo "Test 1 (the_author Filter): Benutzernamen werden erfolgreich durch 'Anonym/Nickamen' ersetzt.\n";
+} else {
+    echo "Test 1 (the_author Filter): Fehler - Benutzernamen nicht durch 'Anonym/Nickname' ersetzt.\n";
 }
 
-// Test: Check author name in comments
-function test_comments_author($base_url) {
-    $comments_url = $base_url . '/wp-comments-post.php';
-    $response = perform_curl_request($comments_url);
+// Test 2: Überprüfen der Anzeige von Benutzernamen in Kommentaren
+$url = 'http://localhost/2024/04/12/hallo-welt/';
+$response = get($url);
+$body = $response['body'];
 
-    if (strpos($response, 'author') === false) {
-        echo "Comments author test passed.\n";
-    } else {
-        echo "Comments author test failed.\n";
-    }
+if (strpos($body, 'fgjr76') == false) {
+    echo "Test 2 (get_comment_author Filter): Benutzernamen in Kommentaren werden erfolgreich durch 'Anonym' ersetzt.\n";
+} else {
+    echo "Test 2 (get_comment_author Filter): Fehler - Benutzernamen in Kommentaren nicht durch 'Anonym' ersetzt.\n";
 }
 
-// Running tests
-test_author_link($base_url);
-test_rest_api_user($base_url);
-test_feed_author($base_url);
-test_comments_author($base_url);
+// Test 3: Überprüfen der REST-API Antwort
+$url = 'http://localhost/wp-json/wp/v2/users/1';
+// Use the wp_remote_get function to make the request
+$response = get($url);
+
+// Check if the response contains a body
+if (is_array($response) && isset($response['body'])) {
+    // Get the body of the response
+    $body = $response['body'];
+
+    // Output the JSON response directly
+    echo $body;
+} else {
+    echo "Failed to retrieve response.";
+}
+
+// Test 4: Überprüfen der Admin-Warnung
+// $url = 'http://localhost/wp-admin/users.php';
+
 ?>

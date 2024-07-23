@@ -41,17 +41,26 @@ function disable_author_links($link, $author_id) {
     return $link;
 }
 
-// REST API Filter, um Benutzernamen zu verbergen
 function hide_usernames_in_rest($response, $user, $request) {
     $data = $response->get_data();
+
+    // Entfernen Sie den Benutzernamen
     if (isset($data['username'])) {
         unset($data['username']);
     }
+
+    // Entfernen Sie den Slug
+    if (isset($data['slug'])) {
+        unset($data['slug']);
+    }
+
+    // Anpassen des Namensfeldes
     if (!empty($user->nickname) && $user->nickname !== $user->user_login) {
         $data['name'] = $user->nickname;
     } else {
         $data['name'] = 'Anonym';
     }
+
     return rest_ensure_response($data);
 }
 
@@ -87,20 +96,4 @@ function force_display_name_update($user_id, $old_user_data) {
     }
 }
 
-// Verhindert die Anzeige von Benutzernamen in Menüs und ersetzt sie durch den Nicknamen oder "Anonym"
-function hide_usernames_in_menu($items, $args) {
-    foreach ($items as &$item) {
-        if ($item->object == 'user') {
-            $user = get_user_by('id', $item->object_id);
-            if ($user) {
-                if (!empty($user->nickname) && $user->nickname !== $user->user_login) {
-                    $item->title = $user->nickname;
-                } else {
-                    $item->title = 'Anonym';
-                }
-            }
-        }
-    }
-    return $items;
-}
 ?>
