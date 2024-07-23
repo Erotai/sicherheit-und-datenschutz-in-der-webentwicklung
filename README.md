@@ -10,7 +10,7 @@
 
 ### Datenschutzerklärung für das THM Security Plugin
 1. Allgemeine Hinweise
-   Das THM Security Plugin schützt Ihre WordPress-Website vor böswilligen Angriffen und bietet umfassende Sicherheitsfunktionen wie IP-Blockierung und Überwachung von Anfragen. Der Schutz Ihrer Daten ist uns wichtig. Diese Datenschutzerklärung informiert Sie darüber, welche Daten wir erheben, wie wir sie verwenden und welche Rechte Sie in Bezug auf Ihre Daten haben.
+   Dieses Plugin wurde entwickelt, um die Sicherheit Ihrer WordPress-Website zu erhöhen, indem es bösartige Anfragen blockiert und die Anzeige von Benutzernamen an öffentlichen Orten verhindert. Die Einhaltung des Datenschutzes und der Schutz personenbezogener Daten sind uns sehr wichtig. Diese Datenschutzerklärung informiert Sie darüber, welche Daten durch das Plugin erhoben, verwendet und gespeichert werden.
 
 2. Verantwortliche Stelle
    Verantwortlich für die Datenverarbeitung im Rahmen dieses Plugins ist:
@@ -19,7 +19,7 @@
    [E-Mail-Adresse]
 
 3. Erhobene Daten
-   Bei der Nutzung des THM Security Plugins werden folgende personenbezogene Daten erhoben und verarbeitet:
+Bei der Nutzung des THM Security Plugins werden folgende personenbezogene Daten erhoben und verarbeitet:
 
 IP-Adresse: Wird verwendet, um die Herkunft von Anfragen zu identifizieren und böswillige Aktivitäten zu erkennen.
 URL der Anfrage: Dient der Analyse des Zugriffs und der Identifizierung potenziell schädlicher Anfragen.
@@ -28,6 +28,12 @@ Zeitstempel der Anfrage: Erfasst die Zeit der Anfrage für eine genaue Überwach
 Anfrage-Methode (z.B. GET, POST): Zur Analyse des Anfragetypus und zur Erkennung von ungewöhnlichem Verhalten.
 Klassifizierung der Anfrage: Identifiziert und kategorisiert Anfragen als normal oder böswillig.
 Blockierungsstatus und Zeitpunkt: Zeigt an, ob eine IP-Adresse blockiert wurde und wann dies geschah.
+
+3.2 Änderung des Anzeigenamens
+Das Plugin verhindert die Anzeige von Benutzernamen an öffentlichen Orten und ersetzt diese durch den Nicknamen oder "Anonym". Es werden folgende Daten verarbeitet:
+
+Benutzername
+Nickname
 
 6. Zweck der Datenverarbeitung
    Die erhobenen Daten werden zu folgenden Zwecken verarbeitet:
