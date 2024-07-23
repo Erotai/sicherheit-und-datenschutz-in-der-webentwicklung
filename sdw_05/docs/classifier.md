@@ -27,14 +27,8 @@ Diese Funktion dient zur Unterteilung der eingehenden Anfragen in Klassen. Dabei
 >  **1. 'Brute Force Detection'**
 
 Die Brute Force Detection wiederum wird in zwei Kategorien unterteilt: **``'brute-force-login'``** auf der **``'wp-login'``** Seite und **``'brute-force'``** auf der gesamten Website. Ein Brute Force Angriff wird als **``'brute-force-login'``** identifiziert, wenn die Datenbank **10** Einlogversuche der **selben** IP-Adresse in den letzten **10 Minuten** erhalten hat.
-Dies geschieht durch folgende SQL Query:
 
-`"SELECT COUNT(*) FROM %i WHERE client = %s AND url LIKE %s AND time > now() - interval 10 minute", $table_name, $ip, $brute_force_login_uri`.
-
-Ein Brute Force Angriff wird als **``'brute-force'``** identifiziert, wenn **50** Anfragen von der **selben** IP-Adresse innerhalb der letzten **5 Minuten** registriert werden. Dies geschieht durch folgende SQL Query:
-
-`"SELECT COUNT(*) FROM %i WHERE client = %s AND time > now() - interval 5 minute", $table_name, $ip`    
-
+Ein Brute Force Angriff wird als **``'brute-force'``** identifiziert, wenn **50** Anfragen von der **selben** IP-Adresse innerhalb der letzten **5 Minuten** registriert werden.
 Zur Sicherung gegen SQL Injections wurden `Tokens` in der SQL-Abfrage und `$wpdb->prepare` verwendet.
 
 > **2. 'Access Tool Detection'**

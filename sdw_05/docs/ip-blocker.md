@@ -24,21 +24,15 @@ Diese Funktion dient zur Initialisierung des Moduls und überprüft anhand der P
 
 ### 2. `check_ip_block(): bool {...}`
 
-Diese Funktion ist die Hauptfunktion des Modules und überprüft, ob eine IP-Adresse geblockt ist oder nicht. Dafür wird am Anfang der Funktion mithilfe des [**Classifier-Module**](../docs/classifier.md) das Ergebnis der Klassifizierung der Anfrage in einer Prüfvariable gespeichert: `'$request_class = Classifier::classify_request();'`. Diese Variable wird zur Festlegung des Blockstatuses verwendet. Der Blockstatus wird von der Funktion als `'boolean'`-`'return'` Wert ausgegeben. Zu Begin wird überprüft, ob die IP-Adresse der aktuellen Anfrage bereits als blockiert in der Datenbank hinterlegt ist. Dies wird per Datenbankabfrage mit folgender SQL-Query geregelt:
-
-`'SELECT is_blocked, blocked_at FROM %i WHERE client = %s AND is_blocked = 1", $table_name, $ip'`
+Diese Funktion ist die Hauptfunktion des Modules und überprüft, ob eine IP-Adresse geblockt ist oder nicht. Dafür wird am Anfang der Funktion mithilfe des [**Classifier-Module**](../docs/classifier.md) das Ergebnis der Klassifizierung der Anfrage in einer Prüfvariable gespeichert: `'$request_class = Classifier::classify_request();'`. Diese Variable wird zur Festlegung des Blockstatuses verwendet. Der Blockstatus wird von der Funktion als `'boolean'`-`'return'` Wert ausgegeben. Zu Begin wird überprüft, ob die IP-Adresse der aktuellen Anfrage bereits als blockiert in der Datenbank hinterlegt ist. Dies wird per Datenbankabfrage geregelt.
 
 Falls das Ergebnis der SQL-Query das column `'is_blocked'` mit dem Wert `'true'` enthalten sollte, erfolgt die Entblockierungsprüfung, diese lässt sich in die folgenden zwei Sektionen unterteilen:
 
 >  **1. 'Entblockierung von böswilligen IP-Adressen'**
 
-Diese Prüfung beginnt mit einer Datenbankabfrage, die das column `'blocked_at'` ausgibt, wenn seit der Blockierung der IP-Adresse mehr als 24 Stunden vergangen sind und die `'request_class'` nicht mit der Prüfvariable `'$brute_force_class = 'brute-force-login';'` übereinstimmt. Diese Abfrage wurde so konzipiert, um die Unterscheidung zwischen mehreren Arten von **Brute-Force-Attacken** zu unterscheiden. Folgend die besprochene SQL-Query:
+Diese Prüfung beginnt mit einer Datenbankabfrage, die das column `'blocked_at'` ausgibt, wenn seit der Blockierung der IP-Adresse mehr als 24 Stunden vergangen sind und die `'request_class'` nicht mit der Prüfvariable `'$brute_force_class = 'brute-force-login';'` übereinstimmt. Diese Abfrage wurde so konzipiert, um die Unterscheidung zwischen mehreren Arten von **Brute-Force-Attacken** zu unterscheiden.
 
-`"SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 24 HOUR < NOW() AND NOT request_class = %s LIMIT 1", $table_name, $brute_force_class'`
-
-Falls das Ergebnis der SQL-Query das column `'blocked_at'` enthalten sollte, wird eine Entblockierung der IP-Adresse vorgenommen. Dies geschieht ebenfalls durch eine SQL-Query:
-
-`'"UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1", $table_name, $set_new_state, $set_new_date, $ip'`
+Falls das Ergebnis der SQL-Query das column `'blocked_at'` enthalten sollte, wird eine Entblockierung der IP-Adresse vorgenommen.
 
 Diese SQL-Query updated die Datenbanktabelle mit folgenden Werten:
 
@@ -54,13 +48,9 @@ Nach Abschluss der Datenbankabfrage wird das Ergebnis, das die IP-Adresse nicht 
 
 >  **2. 'Entblockierung von Brute-Force-Login IP-Adressen'**
 
-Diese Prüfung beginnt ebenfalls mit einer Datenbankabfrage, die das column `'blocked_at'` ausgibt. Doch anders als bei der ersten Prüfung wird in dieser SQL-Query nach einem Datensatz gesucht, wo die Zeit seit der Blockierung der IP-Adresse mehr als 1 Stunde beträgt und die `'request_class'` mit der Prüfvariable `'$brute_force_class = 'brute-force-login';'` übereinstimmt. Dies dient zur selektiven Ausgabe von Datensätzen, die als `'brute-force-login'` eingestuft wurden.  Diese Funktion unterscheidet zwischen `'brute-force-login'` und `'brute-force'`, um IP-Adressen nach unterschiedlichen Zeiten Entblockierung zu können. Folgend die besprochene SQL-Query:
+Diese Prüfung beginnt ebenfalls mit einer Datenbankabfrage, die das column `'blocked_at'` ausgibt. Doch anders als bei der ersten Prüfung wird in dieser SQL-Query nach einem Datensatz gesucht, wo die Zeit seit der Blockierung der IP-Adresse mehr als 1 Stunde beträgt und die `'request_class'` mit der Prüfvariable `'$brute_force_class = 'brute-force-login';'` übereinstimmt. Dies dient zur selektiven Ausgabe von Datensätzen, die als `'brute-force-login'` eingestuft wurden.  Diese Funktion unterscheidet zwischen `'brute-force-login'` und `'brute-force'`, um IP-Adressen nach unterschiedlichen Zeiten Entblockierung zu können.
 
-`"SELECT blocked_at FROM %i WHERE blocked_at + INTERVAL 1 HOUR < NOW() AND request_class = %s LIMIT 1", $table_name, $brute_force_class'`
-
-Falls das Ergebnis der SQL-Query das column `'blocked_at'` enthalten sollte, wird eine Entblockierung der IP-Adresse vorgenommen. Dies geschieht ebenfalls durch eine SQL-Query:
-
-`'"UPDATE %i SET is_blocked = %d, blocked_at = %s WHERE client = %s AND is_blocked = 1", $table_name, $set_new_state, $set_new_date, $ip'`
+Falls das Ergebnis der SQL-Query das column `'blocked_at'` enthalten sollte, wird eine Entblockierung der IP-Adresse vorgenommen.
 
 Diese SQL-Query updated die Datenbanktabelle mit folgenden Werten:
 
@@ -92,9 +82,7 @@ Diese Funktion hat keine Parameter und gibt als Rückgabewert einen String aus. 
 
 ### 4. `log_exists(): bool {...}`
 
-Diese Funktion hat keine Parameter und gibt als Rückgabewert einen Wahrheitswert aus. Sie wird benutzt, um zu überprüfen, ob bereits ein Log von einer blockierten IP-Adresse in der Datenbank existiert oder nicht. Für die Überprüfung wird eine SQL-Query genutzt, die den letzten blockierten Logeintrag von der IP-Adresse der aktuellen Anfrage ausgibt. Die SQL-Query sieht wie folgt aus:
-
-`'"SELECT is_blocked FROM %i WHERE client = %s AND is_blocked = 1 ORDER BY time DESC LIMIT 1", $table_name, $ip'`
+Diese Funktion hat keine Parameter und gibt als Rückgabewert einen Wahrheitswert aus. Sie wird benutzt, um zu überprüfen, ob bereits ein Log von einer blockierten IP-Adresse in der Datenbank existiert oder nicht. Für die Überprüfung wird eine SQL-Query genutzt, die den letzten blockierten Logeintrag von der IP-Adresse der aktuellen Anfrage ausgibt.
 
 Falls das Ergebnis der SQL-Query das column `'is_blocked'` mit dem Wert `'true'` enthält, gibt die Funktion den Rückgabewert `'return true'` aus. Falls der Wert nicht `'true'` war, gibt die Funktion den Rückgabewert `'return false'` aus.
 
